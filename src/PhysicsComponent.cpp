@@ -359,7 +359,7 @@ void EntityPhysicsComponent::Disable()
 
 
 #pragma region SkeletalPhysicsComponent
-
+// [Obsolete]
 btRigidBody* CreateBoneRigidbody(float mass, btTransform& offset, btCollisionShape* pshape)
 {
 	if (mass == 0)
@@ -375,6 +375,20 @@ btRigidBody* CreateBoneRigidbody(float mass, btTransform& offset, btCollisionSha
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(m, motionState, pshape, localInertia);
 	btRigidBody* body = new btRigidBody(rbInfo);
 	
+	return body;
+}
+btRigidBody* CreateBoneRigidbody(float mass,btTransform& boneTansform, btTransform& offset, btCollisionShape* pshape)
+{
+	btScalar m(mass);
+
+	BoneMotionState* motionState = new BoneMotionState(boneTansform, offset);
+
+	btVector3 localInertia;
+	pshape->calculateLocalInertia(m, localInertia);
+
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(m, motionState, pshape, localInertia);
+	btRigidBody* body = new btRigidBody(rbInfo);
+
 	return body;
 }
 void DestryBoneRigidbody(btRigidBody* body)
@@ -413,31 +427,40 @@ void SetTPose(studiohdr_t* phdr, float outBoneTransform[MAXSTUDIOBONES][3][4])
 		}
 	}
 }
+SkeletalPhysicsComponent::SkeletalPhysicsComponent(
+	bool isKinematic, 
+	PhysicsComponentConstructionInfo* pConstructionInfo, 
+	btDynamicsWorld* pworld, 
+	float initpose[MAXSTUDIOBONES][3][4])
+{
+	Setup(isKinematic, pConstructionInfo, pworld, initpose);
+}
 SkeletalPhysicsComponent::SkeletalPhysicsComponent(bool isKinematic, PhysicsComponentConstructionInfo* pConstructionInfo, btDynamicsWorld* pworld)
 {
-	// for construct with init pose
-	float* initpose = NULL;
 	static float boneTransform[MAXSTUDIOBONES][3][4];
-	if (!initpose)
-	{
-		initpose = (float*)boneTransform;
-		SetTPose(pConstructionInfo->PStudioHeader,boneTransform);
-	}
+	SetTPose(pConstructionInfo->PStudioHeader, boneTransform);
+	Setup(isKinematic, pConstructionInfo, pworld, boneTransform);
+}
+void SkeletalPhysicsComponent::Setup(
+	bool isKinematic, 
+	PhysicsComponentConstructionInfo* pConstructionInfo, 
+	btDynamicsWorld* pworld, float 
+	initpose[MAXSTUDIOBONES][3][4])
+{
 	auto info = pConstructionInfo;
 
 	for (size_t i = 0; i < info->RigidbodyInfos.size(); i++)
 	{
 		auto rigidinfo = info->RigidbodyInfos[i];
-		auto rigidbody = CreateBoneRigidbody(1, rigidinfo.RigidOffset,info->CollisionShapes[rigidinfo.CollisionShape]);
+		btTransform boneTrans;
+		Matrix3x4_ToScaledbtTransform(initpose[rigidinfo.BoneIndex], boneTrans);
+		auto rigidbody = CreateBoneRigidbody(1, boneTrans, rigidinfo.RigidOffset, info->CollisionShapes[rigidinfo.CollisionShape]);
 		rigidbody->setUserIndex(rigidinfo.BoneIndex);
 		rigidbody->setUserIndex2((int)rigidinfo.UserType);
 		rigidbody->setUserPointer(this);
 		_rigidbodies.push_back(rigidbody);
 	}
-	_phdr = pConstructionInfo->PStudioHeader;
-	_pbones = (mstudiobone_t*)((byte*)_phdr + _phdr->boneindex);
-	_enabled = false;
-	SetPose(boneTransform);
+
 	for (size_t i = 0; i < info->ConstraintInfos.size(); i++)
 	{
 		auto cstinfo = info->ConstraintInfos[i];
@@ -478,7 +501,7 @@ SkeletalPhysicsComponent::SkeletalPhysicsComponent(bool isKinematic, PhysicsComp
 				cstinfo.LocalInB
 			);
 			cone->setUserConstraintType((int)cstinfo.UserType);
-			
+
 			cone->setLimit(DegToRad(cstinfo.SwingSpan1), DegToRad(cstinfo.SwingSpan2), DegToRad(cstinfo.TwistSpan));
 			pconstraint = cone;
 			break;
@@ -487,6 +510,7 @@ SkeletalPhysicsComponent::SkeletalPhysicsComponent(bool isKinematic, PhysicsComp
 			break;
 		}
 		pconstraint->setDbgDrawSize(0.2f);
+		pconstraint->setUserConstraintPtr(this);
 		_constraints.push_back(pconstraint);
 	}
 
@@ -506,8 +530,25 @@ SkeletalPhysicsComponent::SkeletalPhysicsComponent(bool isKinematic, PhysicsComp
 	_phdr = info->PStudioHeader;
 	_pbones = (mstudiobone_t*)((byte*)_phdr + _phdr->boneindex);
 	pWorld = pworld;
-}
 
+	// add to world on setup finished
+	for (size_t i = 0; i < _rigidbodies.size(); i++)
+	{
+		btRigidBody* body = _rigidbodies[i];
+
+		getWorld()->addRigidBody(_rigidbodies[i]);
+		if (!phys_corpse->value && !_isKinematic)
+			body->setActivationState(DISABLE_SIMULATION);
+	}
+	for (size_t i = 0; i < _constraints.size(); i++)
+	{
+		auto c = _constraints[i];
+		if (_isKinematic && c->getUserConstraintType() == (int)UserConstraintType::None)
+			continue;
+		getWorld()->addConstraint(c, true);
+	}
+	_enabled = true;
+}
 SkeletalPhysicsComponent::~SkeletalPhysicsComponent()
 {
 	for (auto& i : _rigidbodies)
@@ -588,7 +629,17 @@ void SkeletalPhysicsComponent::SetPose(float pInBonesTransform[MAXSTUDIOBONES][3
 {
 	for (size_t i = 0; i < _rigidbodies.size(); i++)
 	{
-		if (!_enabled ||( _isKinematic && _rigidbodies[i]->getUserIndex2() != (int)UserRigidbodyType::Addon))
+		// SetPose when enabled is usually a kinematic.
+		if (_enabled)
+		{
+			auto rigidbody = _rigidbodies[i];
+			if (rigidbody->getUserIndex2() != (int)UserRigidbodyType::Addon)
+			{
+				auto motionState = (BoneMotionState*)rigidbody->getMotionState();
+				motionState->SetBoneTransform(pInBonesTransform[rigidbody->getUserIndex()]);
+			}
+		}
+		else
 		{
 			auto rigidbody = _rigidbodies[i];
 			auto motionState = (BoneMotionState*)rigidbody->getMotionState();
@@ -597,7 +648,7 @@ void SkeletalPhysicsComponent::SetPose(float pInBonesTransform[MAXSTUDIOBONES][3
 			btTransform trans;
 			motionState->getWorldTransform(trans);
 			rigidbody->setWorldTransform(trans);
-//			rigidbody->setInterpolationWorldTransform(trans);
+			rigidbody->setInterpolationWorldTransform(trans);
 		}
 	}
 	for (size_t i = 0; i < _phdr->numbones; i++)

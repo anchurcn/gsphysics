@@ -56,6 +56,7 @@ TEMPENTITY* RagdollManager::CreateRagdoll(cl_entity_t* pent, entity_state_t* cur
 	tempent->die = FLT_MAX;
 
 	SkeletalPhysicsComponent* component = new SkeletalPhysicsComponent(false, info, pworld);
+	component->Disable();
 	AssignPhysComponent(&tempent->entity, component);
 
 	cl_entity_t* local = gEngfuncs.GetLocalPlayer();

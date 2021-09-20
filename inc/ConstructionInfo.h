@@ -19,6 +19,7 @@ enum class UserConstraintType
 enum class UserRigidbodyType
 {
     None = 0,
+    // jiggle
     Addon
 };
 

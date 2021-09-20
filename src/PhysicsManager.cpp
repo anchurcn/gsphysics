@@ -621,6 +621,7 @@ KinematicManager::KinematicManager(PhysicsAssetManager& assetManager)
 	auto worldspawn = gEngfuncs.GetEntityByIndex(0);
 	worldspawn->curstate.modelindex = 1;
 	auto c = (EntityPhysicsComponent*)MakeNewComponent(worldspawn);
+	c->Disable();
 	c->SetComponentType(ComponentType::Static);
 	c->Enable();
 }
@@ -683,18 +684,6 @@ void KinematicManager::AddNormal(cl_entity_t* pent)
 			if (record->KinematicComponent != null)
 				record->KinematicComponent->Disable();
 			MakeNewComponent(pEntity);
-			// enable new if present
-			if (record->KinematicComponent != null)
-			{
-				// for those studio models, gives the newest pose
-				if (modelType == modtype_t::mod_studio)
-				{
-					auto component = (SkeletalPhysicsComponent*)record->KinematicComponent;
-					PreSetupBonesModel(pEntity, gCurrentTime, gDeltaTime, bonesTransform);
-					component->SetPose(bonesTransform);
-				}
-				record->KinematicComponent->Enable();
-			}
 		}
 		else
 		{
@@ -731,19 +720,6 @@ void KinematicManager::AddNormal(cl_entity_t* pent)
 		else
 		{
 			MakeNewComponent(pEntity);
-			// maybe null before, we make a new record just now.
-			record = _lookupTable[entityIndex];
-			if (record->KinematicComponent != null)
-			{
-				// for those studio models, gives the newest pose
-				if (modelType == modtype_t::mod_studio)
-				{
-					auto component = (SkeletalPhysicsComponent*)record->KinematicComponent;
-					PreSetupBonesModel(pEntity, gCurrentTime, gDeltaTime, bonesTransform);
-					component->SetPose(bonesTransform);
-				}
-				record->KinematicComponent->Enable();
-			}
 		}
 	}
 }
@@ -778,7 +754,7 @@ void KinematicManager::AddPlayer(cl_entity_t* pent)
 		else
 		{
 			// change component
-			// if no phys, NULL component is applied and remove from world
+			// if no phys, apply NULL component and remove from world (IsInWorld = false).
 			// register name
 			info.Component->Disable();
 			delete info.Component;
@@ -786,10 +762,8 @@ void KinematicManager::AddPlayer(cl_entity_t* pent)
 			if (_assetManager.IsPlayerAssetAvailable(playerInfo->model, assetIndex))
 			{
 				auto asset = (PhysicsComponentConstructionInfo*)_assetManager.GetPlayerPhysicsAsset(assetIndex);
-				auto component = info.Component = new SkeletalPhysicsComponent(true, asset, DynamicWorld);
 				PreModelRenderer.SetupBonesPlayer(pent, gCurrentTime, gDeltaTime, boneTransform);
-				component->SetPose(boneTransform);
-				component->Enable();
+				auto component = info.Component = new SkeletalPhysicsComponent(true, asset, DynamicWorld, boneTransform);
 			}
 			else
 			{
@@ -829,10 +803,8 @@ void KinematicManager::AddPlayer(cl_entity_t* pent)
 			if (_assetManager.IsPlayerAssetAvailable(playerInfo->model, assetIndex))
 			{
 				auto asset = (PhysicsComponentConstructionInfo*)_assetManager.GetPlayerPhysicsAsset(assetIndex);
-				auto component = info.Component = new SkeletalPhysicsComponent(true, asset, DynamicWorld);
 				PreModelRenderer.SetupBonesPlayer(pent, gCurrentTime, gDeltaTime, boneTransform);
-				component->SetPose(boneTransform);
-				component->Enable();
+				auto component = info.Component = new SkeletalPhysicsComponent(true, asset, DynamicWorld, boneTransform);
 				info.IsInWorld = true;
 			}
 			else
@@ -957,14 +929,15 @@ IPhysicsComponent* KinematicManager::MakeNewComponent(cl_entity_t* pent)
 		{
 			auto shape = (btCollisionShape*)_assetManager.GetPhysicsAsset(entityModel);
 			auto component = new EntityPhysicsComponent(pent, shape, DynamicWorld);
-
+			component->Enable();
 			result = component;
 		}
 		else if (pent->model->type == modtype_t::mod_studio)
 		{
+			static float bonesTransform[MAXSTUDIOBONES][3][4];
 			auto info = (PhysicsComponentConstructionInfo*)_assetManager.GetPhysicsAsset(entityModel);
-			auto component = new SkeletalPhysicsComponent(true, info, DynamicWorld);
-
+			PreSetupBonesModel(pent, gCurrentTime, gDeltaTime, bonesTransform);
+			auto component = new SkeletalPhysicsComponent(true, info, DynamicWorld, bonesTransform);
 			result = component;
 		}
 		else

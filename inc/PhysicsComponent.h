@@ -83,8 +83,11 @@ class SkeletalPhysicsComponent:public IPhysicsComponent
 {
 public:
     SkeletalPhysicsComponent(bool isKinematic,PhysicsComponentConstructionInfo* pConstructionInfo,btDynamicsWorld* pworld);
-    //SkeletalPhysicsComponent(bool isKinematic, PhysicsComponentConstructionInfo* pConstructionInfo, 
-    //btDynamicsWorld* pworld,float initpose[MAXSTUDIOBONES][3][4]);
+    SkeletalPhysicsComponent(
+        bool isKinematic,
+        PhysicsComponentConstructionInfo* pConstructionInfo,
+        btDynamicsWorld* pworld,
+        float initpose[MAXSTUDIOBONES][3][4]);
     ~SkeletalPhysicsComponent();
 
     virtual void Enable();
@@ -112,6 +115,11 @@ private:
     btDynamicsWorld* getWorld() { return pWorld; }
     void SetKinematic();
     void SetDynamic();
+    void Setup(
+        bool isKinematic,
+        PhysicsComponentConstructionInfo* pConstructionInfo,
+        btDynamicsWorld* pworld,
+        float initpose[MAXSTUDIOBONES][3][4]);
 
 };
 #pragma endregion
