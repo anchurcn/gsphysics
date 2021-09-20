@@ -84,7 +84,8 @@ void DrawSprString_Flush()
 		int x = p->x;
 		int y = p->y;
 		p++;
-		int len = DrawSprString_Internal(x, y, &p->firstchar);
+		int len = strlen(&p->firstchar);
+		gEngfuncs.pfnDrawString(x, y, &p->firstchar, 255, 255, 255);
 		p = (CoordChar*)(((char*)p) + len+1);
 	}
 	g_pcurchar = (CoordChar*)g_strbuf;
