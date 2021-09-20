@@ -764,6 +764,7 @@ void KinematicManager::AddPlayer(cl_entity_t* pent)
 				auto asset = (PhysicsComponentConstructionInfo*)_assetManager.GetPlayerPhysicsAsset(assetIndex);
 				PreModelRenderer.SetupBonesPlayer(pent, gCurrentTime, gDeltaTime, boneTransform);
 				auto component = info.Component = new SkeletalPhysicsComponent(true, asset, DynamicWorld, boneTransform);
+				component->SetOwner(pent);
 			}
 			else
 			{
@@ -805,6 +806,7 @@ void KinematicManager::AddPlayer(cl_entity_t* pent)
 				auto asset = (PhysicsComponentConstructionInfo*)_assetManager.GetPlayerPhysicsAsset(assetIndex);
 				PreModelRenderer.SetupBonesPlayer(pent, gCurrentTime, gDeltaTime, boneTransform);
 				auto component = info.Component = new SkeletalPhysicsComponent(true, asset, DynamicWorld, boneTransform);
+				component->SetOwner(pent);
 				info.IsInWorld = true;
 			}
 			else
@@ -938,6 +940,7 @@ IPhysicsComponent* KinematicManager::MakeNewComponent(cl_entity_t* pent)
 			auto info = (PhysicsComponentConstructionInfo*)_assetManager.GetPhysicsAsset(entityModel);
 			PreSetupBonesModel(pent, gCurrentTime, gDeltaTime, bonesTransform);
 			auto component = new SkeletalPhysicsComponent(true, info, DynamicWorld, bonesTransform);
+			component->SetOwner(pent);
 			result = component;
 		}
 		else

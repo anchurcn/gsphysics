@@ -100,6 +100,8 @@ public:
     void SetPose(float pInBonesTransform[MAXSTUDIOBONES][3][4]);
     void SetupBones(float pOutBoneTransform[MAXSTUDIOBONES][3][4]);
     void SetVelocity(btVector3& v);
+    cl_entity_t* GetOwner() { return powner; }
+    void SetOwner(cl_entity_t* pent) { powner = pent; }
 
 private:
     PhysicsComponentConstructionInfo* _pConstructionInfo;
@@ -111,6 +113,7 @@ private:
     studiohdr_t* _phdr;
     mstudiobone_t* _pbones;
     btDynamicsWorld* pWorld;
+    cl_entity_t* powner;
 
     btDynamicsWorld* getWorld() { return pWorld; }
     void SetKinematic();

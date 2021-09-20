@@ -58,6 +58,7 @@ TEMPENTITY* RagdollManager::CreateRagdoll(cl_entity_t* pent, entity_state_t* cur
 	SkeletalPhysicsComponent* component = new SkeletalPhysicsComponent(false, info, pworld);
 	component->Disable();
 	AssignPhysComponent(&tempent->entity, component);
+	component->SetOwner(&tempent->entity);
 
 	cl_entity_t* local = gEngfuncs.GetLocalPlayer();
 	Vector v = (pent->origin - local->origin).Normalize();
