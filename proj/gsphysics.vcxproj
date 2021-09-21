@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\checksum_sha1.cpp" />
     <ClCompile Include="..\src\BulletUtils.cpp" />
     <ClCompile Include="..\src\ConstructionInfo.cpp" />
     <ClCompile Include="..\src\cvarcfg.cpp" />
