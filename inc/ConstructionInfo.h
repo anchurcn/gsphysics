@@ -58,6 +58,7 @@ public:
     ~PhysicsComponentConstructionInfo();
 
     void Parse(const char* const gpdStream,int streamLen,studiohdr_t* phdr);
+    char Checksum[41];
     std::vector<btCollisionShape*> CollisionShapes;
     std::vector<RigidbodyInfo> RigidbodyInfos;
     std::vector<ConstraintInfo> ConstraintInfos;

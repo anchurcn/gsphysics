@@ -184,6 +184,8 @@ void PhysicsComponentConstructionInfo::Parse(const char* const gpdStream, int st
 	doc.Parse(gpdStream, streamLen);
 	auto gpd = doc.FirstChildElement("goldsrc-physics-data");
 
+	strcpy(Checksum, gpd->Attribute("checksum"));
+
 	// shape block
 	auto shapeBlockElement = gpd->FirstChildElement("collision-shape-block");
 	std::vector<XMLElement*> shapeElements;

@@ -1,3 +1,5 @@
+#include<stdio.h>
+#include<../gsphysics/checksum_sha1.h>
 #include"PhysicsAssetsManager.h"
 #include"../gsphysics/tinyxml2.h"
 #include<cvarcfg.h>
@@ -19,7 +21,20 @@
 
 extern engine_studio_api_t IEngineStudio;
 
-PhysicsComponentConstructionInfo* LoadConstructionInfoByPath(const char* gpdPath,studiohdr_t* phdr)
+CSHA1 gsha1;
+void CalcHdrChecksum(studiohdr_t* phdr, char outChecksum[41])
+{
+	unsigned char sha1[20];
+	gsha1.Reset();
+	gsha1.Update((unsigned char*)phdr, sizeof(studiohdr_t));
+	gsha1.Final();
+	gsha1.GetHash(sha1);
+	for (int i = 0; i < 20; i++)
+	{
+		sprintf(&outChecksum[i * 2], "%002X", (int)sha1[i]);
+	}
+}
+PhysicsComponentConstructionInfo* LoadConstructionInfoByPath(const char* gpdPath, studiohdr_t* phdr)
 {
 	int length = 0;
 	auto memStream = gEngfuncs.COM_LoadFile(gpdPath, 5, &length);
@@ -31,6 +46,15 @@ PhysicsComponentConstructionInfo* LoadConstructionInfoByPath(const char* gpdPath
 	{
 		auto pInfo = new PhysicsComponentConstructionInfo();
 		pInfo->Parse((char*)memStream, length, phdr);
+
+		char checksum[41];
+		CalcHdrChecksum(phdr, checksum);
+		if (strcmp(pInfo->Checksum, checksum))
+		{
+			delete pInfo;
+			pInfo = nullptr;
+		}
+
 		return pInfo;
 	}
 }
