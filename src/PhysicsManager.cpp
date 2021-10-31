@@ -76,6 +76,17 @@ void DrawSprString(int x, int y, const char* str)
 	g_pcurchar->firstchar = '\0';
 	g_pcurchar = (CoordChar*)(((int)g_pcurchar) + 1);
 }
+/// <summary>
+/// Since it is a buffered draw,
+/// we need to clear the buffer at the start of a new frame.
+/// Althought there's a clear call at the end of flush function,
+/// sometimes HUD_Redraw will not call at a frame.
+/// Clear on HUD_Frame.
+/// </summary>
+void DrawSprString_Clear()
+{
+	g_pcurchar = (CoordChar*)g_strbuf;
+}
 void DrawSprString_Flush()
 {
 	auto p = (CoordChar*)g_strbuf;
@@ -377,9 +388,6 @@ void PhysicsManager::Update(float currentTime, float deltaTime)
 	g_pcurchar = (CoordChar*)g_strbuf;
 	gCurrentTime = currentTime;
 	gDeltaTime = deltaTime;
-	char msg[64];
-	sprintf_s<64>(msg, "FPS: %f\n", floor( 1 / deltaTime));
-	DrawSprString(1100, 0, msg);
 	if (currentTime == deltaTime)
 		return;
 	for (size_t i = 0; i < _visEntities.size(); i++)
