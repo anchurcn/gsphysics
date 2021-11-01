@@ -306,23 +306,22 @@ BufferedDebugDrawer::~BufferedDebugDrawer()
 #pragma endregion
 void PhysicsManager::Init()
 {
-	phys_corpse = gEngfuncs.pfnRegisterVariable("phys_corpse", "1", FCVAR_CLIENTDLL);
-	phys_corpsestay = gEngfuncs.pfnRegisterVariable("phys_corpsestay", "60", FCVAR_CLIENTDLL);
+	phys_corpse = gEngfuncs.pfnRegisterVariable("phys_corpse", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	phys_corpsestay = gEngfuncs.pfnRegisterVariable("phys_corpsestay", "60", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 	char mode[32];
-	sprintf_s<32>(mode, "%d", btIDebugDraw::DBG_DrawConstraintLimits | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawWireframe);
-	phys_debugdraw = gEngfuncs.pfnRegisterVariable("phys_debugdraw", /*"63567"*/mode, FCVAR_CLIENTDLL);
-	phys_drawstatic = gEngfuncs.pfnRegisterVariable("phys_drawstatic", "0", FCVAR_CLIENTDLL);
-	phys_simurate = gEngfuncs.pfnRegisterVariable("phys_simurate", "60", FCVAR_CLIENTDLL);
-	phys_scale = gEngfuncs.pfnRegisterVariable("phys_scale", /*"0.03"*/"0.04", FCVAR_CLIENTDLL);
-	phys_gravity = gEngfuncs.pfnRegisterVariable("phys_gravity", "9.8", FCVAR_CLIENTDLL);
-	phys_dtest = gEngfuncs.pfnRegisterVariable("phys_dtest", "0", FCVAR_CLIENTDLL);
-	phys_jiggle = gEngfuncs.pfnRegisterVariable("phys_jiggle", "1", FCVAR_CLIENTDLL);
+	sprintf_s<32>(mode, "%d", false ? btIDebugDraw::DBG_DrawConstraintLimits | btIDebugDraw::DBG_DrawConstraints | btIDebugDraw::DBG_DrawWireframe : btIDebugDraw::DBG_NoDebug);
+	phys_debugdraw = gEngfuncs.pfnRegisterVariable("phys_debugdraw", /*"63567"*/mode, FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	phys_drawstatic = gEngfuncs.pfnRegisterVariable("phys_drawstatic", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	phys_simurate = gEngfuncs.pfnRegisterVariable("phys_simurate", "60", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	phys_scale = gEngfuncs.pfnRegisterVariable("phys_scale", /*"0.03"*/"0.03", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	phys_gravity = gEngfuncs.pfnRegisterVariable("phys_gravity", "9.8", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	phys_dtest = gEngfuncs.pfnRegisterVariable("phys_dtest", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	phys_jiggle = gEngfuncs.pfnRegisterVariable("phys_jiggle", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 
-	phys_explode_r = gEngfuncs.pfnRegisterVariable("phys_explode_r", "270", FCVAR_CLIENTDLL);
-	phys_explode_i = gEngfuncs.pfnRegisterVariable("phys_explode_i", "1000", FCVAR_CLIENTDLL);
+	phys_explode_r = gEngfuncs.pfnRegisterVariable("phys_explode_r", "270", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	phys_explode_i = gEngfuncs.pfnRegisterVariable("phys_explode_i", "1000", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 
 	gEngfuncs.pfnAddCommand("phys_explode", Phys_Explode);
-	gEngfuncs.CL_LoadModel("sprites/explode1.spr", &explmdl);
 	gEngfuncs.pfnAddCommand("phys_createragdoll", Phys_CreateRagdoll);
 
 	PreModelRenderer.InitEx();
@@ -371,6 +370,10 @@ void PhysicsManager::NewMap()
 	PCorpseManager = new CorpseManager(*PAssetManager, *PRagdollManager);
 
 	m_dynamicsWorld->setGravity(btVector3(0, 0, -phys_gravity->value));
+
+	gEngfuncs.CL_LoadModel("sprites/explode1.spr", &explmdl);
+	if (!gEngfuncs.pfnGetCvarFloat("sv_cheats"))
+		gEngfuncs.Cvar_SetValue("phys_dtest", 1);
 }
 
 void PhysicsManager::AddEntity(cl_entity_t* pent, int entType)
