@@ -29,7 +29,7 @@
 
 #include<PhysicsManager.h>
 #include<cvarcfg.h>
-
+#define vec3_t Vector
 //SkeletalPhysicsComponent* GetPhysComponent(cl_entity_t* ent) {
 //	return *(SkeletalPhysicsComponent**)&ent->curstate.iuser1;
 //}

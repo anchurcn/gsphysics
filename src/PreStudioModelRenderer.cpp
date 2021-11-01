@@ -25,7 +25,7 @@
 
 /////////////////////
 // Implementation of PreStudioModelRenderer.h
-
+#define vec3_t Vector
 /*
 ====================
 Init

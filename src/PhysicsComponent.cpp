@@ -1,6 +1,6 @@
 #include<PhysicsComponent.h>
 #include<cvarcfg.h>
-
+#define vec3_t Vector
 
 void Matrix4x4_Transpose(float out[4][4], float in1[4][4])
 {
