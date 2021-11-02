@@ -3,12 +3,16 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <HLSDK>..\..</HLSDK>
+    <BULLET3>..\..\bullet3</BULLET3>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
   <ItemGroup>
     <BuildMacro Include="HLSDK">
       <Value>$(HLSDK)</Value>
+    </BuildMacro>
+    <BuildMacro Include="BULLET3">
+      <Value>$(BULLET3)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

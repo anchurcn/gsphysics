@@ -125,7 +125,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(HLSDK)\dlls;$(HLSDK)\cl_dll;$(HLSDK)\public;$(HLSDK)\common;$(HLSDK)\pm_shared;$(HLSDK)\engine;$(HLSDK)\utils\vgui\include;$(HLSDK)\game_shared;$(HLSDK)\external;..\..\bullet3\src\;$(ProjDir)..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(HLSDK)\dlls;$(HLSDK)\cl_dll;$(HLSDK)\public;$(HLSDK)\common;$(HLSDK)\pm_shared;$(HLSDK)\engine;$(HLSDK)\utils\vgui\include;$(HLSDK)\game_shared;$(HLSDK)\external;$(BULLET3)\src\;$(ProjDir)..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -144,7 +144,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(HLSDK)\dlls;$(HLSDK)\cl_dll;$(HLSDK)\public;$(HLSDK)\common;$(HLSDK)\pm_shared;$(HLSDK)\engine;$(HLSDK)\utils\vgui\include;$(HLSDK)\game_shared;$(HLSDK)\external;..\..\bullet3\src\;$(ProjDir)..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(HLSDK)\dlls;$(HLSDK)\cl_dll;$(HLSDK)\public;$(HLSDK)\common;$(HLSDK)\pm_shared;$(HLSDK)\engine;$(HLSDK)\utils\vgui\include;$(HLSDK)\game_shared;$(HLSDK)\external;$(BULLET3)\src\;$(ProjDir)..\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
