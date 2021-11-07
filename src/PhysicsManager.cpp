@@ -119,26 +119,18 @@ PhysicsManager::PhysicsManager()
 }
 PhysicsManager::~PhysicsManager()
 {
-	delete PAssetManager;
-	delete PRagdollManager;
-	delete PServerEntManager;
-	delete PCorpseManager;
+#define DeleteNotNullObject(ptr) if(ptr) delete (ptr);
 
-	delete m_dynamicsWorld->getDebugDrawer();
-	delete m_dynamicsWorld;
-	m_dynamicsWorld = 0;
-
-	delete m_solver;
-	m_solver = 0;
-
-	delete m_broadphase;
-	m_broadphase = 0;
-
-	delete m_dispatcher;
-	m_dispatcher = 0;
-
-	delete m_collisionConfiguration;
-	m_collisionConfiguration = 0;
+	DeleteNotNullObject(PAssetManager)
+	DeleteNotNullObject(PRagdollManager)
+	DeleteNotNullObject(PServerEntManager)
+	DeleteNotNullObject(PCorpseManager)
+	DeleteNotNullObject(m_dynamicsWorld->getDebugDrawer())
+	DeleteNotNullObject(m_dynamicsWorld)
+	DeleteNotNullObject(m_solver)
+	DeleteNotNullObject(m_broadphase)
+	DeleteNotNullObject(m_dispatcher)
+	DeleteNotNullObject(m_collisionConfiguration)
 }
 #pragma region MakeExplosion
 
@@ -735,8 +727,8 @@ void KinematicManager::AddNormal(cl_entity_t* pent)
 		}
 	}
 }
-// 要渲染的 studiomodel 实体都必须经过 kinematic manager
-// 不然实体未经过这里更新状态渲染时会拿到旧的数据误认为已经setup bones过了
+// 要锟斤拷染锟斤拷 studiomodel 实锟藉都锟斤拷锟诫经锟斤拷 kinematic manager
+// 锟斤拷然实锟斤拷未锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟阶刺拷锟饺臼憋拷锟斤拷玫锟斤拷傻锟斤拷锟斤拷锟斤拷锟斤拷锟轿拷丫锟絪etup bones锟斤拷锟斤拷
 
 void KinematicManager::AddPlayer(cl_entity_t* pent)
 {
