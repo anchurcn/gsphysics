@@ -34,8 +34,8 @@ public:
 	virtual void StudioSaveBones(studiohdr_t* phdr, float inBoneTransform[MAXSTUDIOBONES][3][4]);
 private:
 	// Public Interfaces
-	virtual int StudioDrawModel(int flags);
-	virtual int StudioDrawPlayer(int flags, struct entity_state_s* pplayer);
+	virtual bool StudioDrawModel(int flags);
+	virtual bool StudioDrawPlayer(int flags, struct entity_state_s* pplayer);
 
 private:
 	virtual void Init(void);

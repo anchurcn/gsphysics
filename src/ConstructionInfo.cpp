@@ -256,7 +256,10 @@ void PhysicsComponentConstructionInfo::Parse(const char* const gpdStream, int st
 	for (auto& i : RigidbodyInfos)
 	{
 		auto iter = std::find(boneIndeces.begin(), boneIndeces.end(), i.BoneIndex);
-		boneIndeces.erase(iter);
+		if (iter != boneIndeces.end())
+		{
+			boneIndeces.erase(iter);
+		}
 	}
 }
 

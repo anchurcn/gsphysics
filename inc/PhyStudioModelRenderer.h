@@ -19,8 +19,8 @@ public:
 	PhyStudioModelRenderer(void);
 	int StudioDrawModelEx(int flags);
 	// override public interfaces
-	virtual int StudioDrawModel(int flags);
-	virtual int StudioDrawPlayer(int flags, struct entity_state_s* pplayer);
+	virtual bool StudioDrawModel(int flags);
+	virtual bool StudioDrawPlayer(int flags, struct entity_state_s* pplayer);
 
 	virtual void Init(void);
 	virtual int StudioDrawPhysModel(int flags);

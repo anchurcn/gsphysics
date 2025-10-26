@@ -1276,7 +1276,7 @@ StudioDrawModel
 
 ====================
 */
-int PreStudioModelRenderer::StudioDrawModel(int flags)
+bool PreStudioModelRenderer::StudioDrawModel(int flags)
 {
 	IEngineStudio.GetTimes(&m_nFrameCount, &m_clTime, &m_clOldTime);
 	IEngineStudio.GetViewInfo(m_vRenderOrigin, m_vUp, m_vRight, m_vNormal);
@@ -1650,7 +1650,7 @@ StudioDrawPlayer
 
 ====================
 */
-int PreStudioModelRenderer::StudioDrawPlayer(int flags, entity_state_t* pplayer)
+bool PreStudioModelRenderer::StudioDrawPlayer(int flags, entity_state_t* pplayer)
 {
 	IEngineStudio.GetTimes(&m_nFrameCount, &m_clTime, &m_clOldTime);
 	IEngineStudio.GetViewInfo(m_vRenderOrigin, m_vUp, m_vRight, m_vNormal);

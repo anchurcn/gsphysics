@@ -2,6 +2,12 @@
 #include<PreStudioModelRenderer.h>
 #include<cvarcfg.h>
 #include<BulletUtils.h>
+//#include<Windows.h>
+#define DECLSPEC_IMPORT __declspec(dllimport)
+#define WINGDIAPI DECLSPEC_IMPORT
+#define WINAPI __stdcall
+#define WINAPIV __cdecl
+#define APIENTRY WINAPI
 #include<gl/GL.h>
 #include<entity_types.h>
 
@@ -243,7 +249,7 @@ void dbg_flushlines()
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	if (!phys_dtest->value)
-		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);	
 }
 void dbg_drawline(const Vector& from, const Vector& to)
 {

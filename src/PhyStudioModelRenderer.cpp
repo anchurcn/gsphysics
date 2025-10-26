@@ -275,7 +275,7 @@ int PhyStudioModelRenderer::StudioDrawModelEx(int flags)
 	//	return CStudioModelRenderer::StudioDrawModel(flags);
 	//}
 }
-int PhyStudioModelRenderer::StudioDrawModel(int flags)
+bool PhyStudioModelRenderer::StudioDrawModel(int flags)
 {
 	m_pCurrentEntity = IEngineStudio.GetCurrentEntity();
 	m_pRenderModel = m_pCurrentEntity->model;
@@ -284,7 +284,7 @@ int PhyStudioModelRenderer::StudioDrawModel(int flags)
 	return StudioDrawModelEx(flags);
 }
 
-int PhyStudioModelRenderer::StudioDrawPlayer(int flags, entity_state_s* pplayer)
+bool PhyStudioModelRenderer::StudioDrawPlayer(int flags, entity_state_s* pplayer)
 {
 	m_pCurrentEntity = IEngineStudio.GetCurrentEntity();
 	if (gPhysicsManager.PCorpseManager->IsEntityAlreadyDead(m_pCurrentEntity))
